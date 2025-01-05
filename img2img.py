@@ -74,7 +74,7 @@ def execute_conversion(options):
     out_image = out_image.crop(cropped_area)
 
     # Save the final output image
-    out_image.save(options.output)
+    out_image.save(os.path.join("results", options.output))
 
 
 if __name__ == '__main__':

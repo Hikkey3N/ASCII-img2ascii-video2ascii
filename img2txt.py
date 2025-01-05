@@ -9,16 +9,16 @@ def get_args():
     # Set up argument parser for command line inputs
     parser = argparse.ArgumentParser("Image to ASCII")
     parser.add_argument("--input", type=str, default="data/input.jpg", help="Path to input image")
-    parser.add_argument("--output", type=str, default="data/output.txt", help="Path to output text file")
+    parser.add_argument("--output", type=str, default="txt_output.txt", help="Path to output text file")
     parser.add_argument("--mode", type=str, default="complex", choices=["simple", "complex"],
                         help="10 or 70 different characters")
-    parser.add_argument("--num_cols", type=int, default=150, help="Number of characters for output's width")
+    parser.add_argument("--num_cols", type=int, default=200, help="Number of characters for output's width")
     return parser.parse_args()
 
 
 def execute_conversion(options):
     # Create results directory if it doesn't exist
-    os.makedirs("results/data", exist_ok=True)
+    os.makedirs("results", exist_ok=True)
 
     # Define character sets based on the selected mode
     if options.mode == "simple":

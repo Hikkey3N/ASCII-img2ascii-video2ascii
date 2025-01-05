@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageOps
 from utils import get_data
+import os
 
 
 def parse_arguments():
@@ -20,6 +21,9 @@ def parse_arguments():
 
 
 def execute_conversion(options):
+    # Create results directory if it doesn't exist
+    os.makedirs("results/data", exist_ok=True)
+
     # Determine background color based on user input
     bg_color = (255, 255, 255) if options.background == "white" else (0, 0, 0)
 
@@ -74,7 +78,7 @@ def execute_conversion(options):
     output_img = output_img.crop(cropped_area)
 
     # Save the final output image
-    output_img.save(options.output)
+    output_img.save(os.path.join("results", options.output))
 
 
 if __name__ == '__main__':

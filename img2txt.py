@@ -2,6 +2,7 @@ import argparse
 import cv2
 import numpy as np
 from utils import get_data
+import os
 
 
 def get_args():
@@ -16,6 +17,9 @@ def get_args():
 
 
 def execute_conversion(options):
+    # Create results directory if it doesn't exist
+    os.makedirs("results/data", exist_ok=True)
+
     # Define character sets based on the selected mode
     if options.mode == "simple":
         CHAR_LIST = '@%#*+=-:. '
@@ -41,7 +45,7 @@ def execute_conversion(options):
         num_rows = int(height / cell_height)
 
     # Open output file to write ASCII characters
-    with open(options.output, 'w') as output_file:
+    with open(os.path.join("results", options.output), 'w') as output_file:
         for i in range(num_rows):
             for j in range(options.num_cols):
                 # Calculate average brightness for the current cell

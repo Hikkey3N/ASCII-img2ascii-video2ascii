@@ -15,7 +15,7 @@ def get_args():
     parser.add_argument("--mode", type=str, default="standard")
     parser.add_argument("--background", type=str, default="black", choices=["black", "white"],
                         help="Background color for output image")
-    parser.add_argument("--num_cols", type=int, default=300, help="Number of characters for output's width")
+    parser.add_argument("--num_cols", type=int, default=600, help="Number of characters for output's width")
     args = parser.parse_args()
     return args
 

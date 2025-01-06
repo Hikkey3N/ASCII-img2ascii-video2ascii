@@ -29,7 +29,7 @@ def execute_conversion(options):
     if options.mode == "simple":
         char_list = r'@%#*+=-:. '
     else:
-        char_list = r"$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
+        char_list = r"$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^'. "
 
     # Determine background color based on user input
     bg_color = 255 if options.background == "white" else 0
@@ -40,20 +40,31 @@ def execute_conversion(options):
     # Open video capture
     cap = cv2.VideoCapture(options.input)
 
-    # Get FPS
-    fps = int(cap.get(cv2.CAP_PROP_FPS)) if options.fps == 0 else options.fps
+    # Get input video properties
+    input_fps = cap.get(cv2.CAP_PROP_FPS)
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = input_fps if options.fps == 0 else options.fps
+
+    # Calculate frame duration to process frames at the correct rate
+    frame_duration = 1.0 / input_fps
+
+    print(f"Input FPS: {input_fps}, Total frames: {frame_count}, Output FPS: {fps}")
 
     num_chars = len(char_list)
     num_cols = options.num_cols
 
+    # Initialize variables for video writer and time tracking
+    out = None
+    frame_idx = 0
+
     while cap.isOpened():
         flag, frame = cap.read()
 
-        if flag:
-            # Convert frame to grayscale
-            image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        else:
+        if not flag:
             break
+
+        # Process the current frame
+        image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         height, width = image.shape
         cell_width = width / num_cols
@@ -94,21 +105,33 @@ def execute_conversion(options):
         # Convert to BGR for video writing
         out_image = cv2.cvtColor(np.array(out_image), cv2.COLOR_GRAY2BGR)
 
-        # Initialize video writer
-        if 'out' not in locals():
+        # Initialize video writer if not already done
+        if out is None:
             out = cv2.VideoWriter("results/" + options.output, cv2.VideoWriter_fourcc(*"mp4v"), fps,
-                                   (out_image.shape[1], out_image.shape[0]))
+                                  (out_image.shape[1], out_image.shape[0]))
 
         # Overlay if specified
         if options.overlay_ratio:
-            height, width, _ = out_image.shape
-            overlay = cv2.resize(frame, (int(width * options.overlay_ratio), int(height * options.overlay_ratio)))
-            out_image[height - int(height * options.overlay_ratio):, width - int(width * options.overlay_ratio):, :] = overlay
+            overlay_width = int(out_image.shape[1] * options.overlay_ratio)
+            overlay_height = int(out_image.shape[0] * options.overlay_ratio)
+            overlay = cv2.resize(frame, (overlay_width, overlay_height))
+            out_image[-overlay_height:, -overlay_width:, :] = overlay
 
+        # Write the frame to the output video
         out.write(out_image)
 
+        # Increment time and frame index
+        time_elapsed += frame_duration
+        frame_idx += 1
+
+        print(f"Processed frame {frame_idx}/{frame_count}")
+
     cap.release()
-    out.release()
+    if out:
+        out.release()
+
+    print("Video conversion completed successfully!")
+
 
 
 if __name__ == '__main__':

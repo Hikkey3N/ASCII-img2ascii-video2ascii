@@ -39,20 +39,30 @@ def execute_conversion(options):
     # Open video capture
     cap = cv2.VideoCapture(options.input)
 
-    # Get FPS
-    fps = int(cap.get(cv2.CAP_PROP_FPS)) if options.fps == 0 else options.fps
+    # Get input video properties
+    input_fps = cap.get(cv2.CAP_PROP_FPS)
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = input_fps if options.fps == 0 else options.fps
+
+    # Calculate frame duration
+    frame_duration = 1.0 / input_fps
+
+    print(f"Input FPS: {input_fps}, Total frames: {frame_count}, Output FPS: {fps}")
 
     num_chars = len(char_list)
     num_cols = options.num_cols
 
+    out = None
+    frame_idx = 0
+
     while cap.isOpened():
         flag, frame = cap.read()
 
-        if flag:
-            # Use the original color frame, don't convert to grayscale
-            image = frame
-        else:
+        if not flag:
             break
+
+        # Process the current frame (keep it in color)
+        image = frame
 
         height, width, _ = image.shape
         cell_width = width / num_cols
@@ -84,15 +94,12 @@ def execute_conversion(options):
                 partial_image = image[int(i * cell_height):min(int((i + 1) * cell_height), height),
                                       int(j * cell_width):min(int((j + 1) * cell_width), width)]
 
-                # Calculate the average color for the region (from the original color frame)
-                avg_color = np.mean(partial_image, axis=(0, 1))  # Averaging across rows and columns (height and width)
+                # Calculate the average color for the region
+                avg_color = tuple(np.clip(np.mean(partial_image, axis=(0, 1)).astype(int), 0, 255))
 
-                # Convert to a tuple and make sure the color values are integers (between 0 and 255)
-                avg_color = tuple(np.clip(avg_color.astype(int), 0, 255))  # Ensure the color values are between 0-255
-
-                # Select the character based on the grayscale value
+                # Select the character based on grayscale value
                 char = char_list[min(int(np.mean(partial_image) * num_chars / 255), num_chars - 1)]
-                
+
                 # Draw the character on the output image
                 draw.text((j * char_width, i * char_height), char, fill=avg_color, font=font)
 
@@ -103,21 +110,33 @@ def execute_conversion(options):
         # Convert to BGR for video writing
         out_image = cv2.cvtColor(np.array(out_image), cv2.COLOR_RGB2BGR)
 
-        # Initialize video writer
-        if 'out' not in locals():
+        # Initialize video writer if not already done
+        if out is None:
             out = cv2.VideoWriter("results/" + options.output, cv2.VideoWriter_fourcc(*"mp4v"), fps,
-                                   (out_image.shape[1], out_image.shape[0]))
+                                  (out_image.shape[1], out_image.shape[0]))
 
         # Overlay if specified
         if options.overlay_ratio:
-            height, width, _ = out_image.shape
-            overlay = cv2.resize(frame, (int(width * options.overlay_ratio), int(height * options.overlay_ratio)))
-            out_image[height - int(height * options.overlay_ratio):, width - int(width * options.overlay_ratio):, :] = overlay
+            overlay_width = int(out_image.shape[1] * options.overlay_ratio)
+            overlay_height = int(out_image.shape[0] * options.overlay_ratio)
+            overlay = cv2.resize(frame, (overlay_width, overlay_height))
+            out_image[-overlay_height:, -overlay_width:, :] = overlay
 
+        # Write the frame to the output video
         out.write(out_image)
 
+        # Increment time and frame index
+        time_elapsed += frame_duration
+        frame_idx += 1
+
+        print(f"Processed frame {frame_idx}/{frame_count}")
+
     cap.release()
-    out.release()
+    if out:
+        out.release()
+
+    print("Video conversion completed successfully!")
+
 
 
 if __name__ == '__main__':

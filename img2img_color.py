@@ -11,11 +11,11 @@ def parse_arguments():
     parser = argparse.ArgumentParser("Image to ASCII")
     parser.add_argument("--input", type=str, default="data/input.jpg", help="Path to input image")
     parser.add_argument("--output", type=str, default="img_color_output.jpg", help="Path to output image")
-    parser.add_argument("--language", type=str, default="english")
+    parser.add_argument("--language", type=str, default="korean")
     parser.add_argument("--mode", type=str, default="standard")
     parser.add_argument("--background", type=str, default="black", choices=["black", "white"],
                         help="Background color for output image")
-    parser.add_argument("--num_cols", type=int, default=800, help="Number of characters for output's width")
+    parser.add_argument("--num_cols", type=int, default=200, help="Number of characters for output's width")
     parser.add_argument("--scale", type=int, default=2, help="Upsize output")
     return parser.parse_args()
 

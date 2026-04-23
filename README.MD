@@ -35,27 +35,27 @@ Input/output paths and resolution are set at the top of each script.
 
 **Image (non-color)**
 <p align="center">
-  <img src="demo/img_demo.jpg" width=800><br/>
+  <img src="data/img_demo.png" width=800><br/>
 </p>
 
 **Image (color)**
 <p align="center">
-  <img src="demo/img_color_demo.jpg" width=800><br/>
+  <img src="data/img_color_demo.png" width=800><br/>
 </p>
 
 **Korean character set**
 <p align="center">
-  <img src="demo/demo_korean.jpg" width=800><br/>
+  <img src="data/demo_korean.jpg" width=800><br/>
 </p>
 
-**Video (color)**
+**Result sample (non-color)**
 <p align="center">
-  <img src="demo/demo_complex_color_160.gif" width=800><br/>
+  <img src="results/data1/img_output.jpg" width=800><br/>
 </p>
 
-**Video (monochrome)**
+**Result sample (color)**
 <p align="center">
-  <img src="demo/demo_simple_white_150.gif" width=800><br/>
+  <img src="results/data1/img_color_output.jpg" width=800><br/>
 </p>
 
 ## Tech

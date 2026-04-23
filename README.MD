@@ -31,32 +31,6 @@ python video2video_color.py
 
 Input/output paths and resolution are set at the top of each script.
 
-## Example output
-
-**Image (non-color)**
-<p align="center">
-  <img src="data/img_demo.png" width=800><br/>
-</p>
-
-**Image (color)**
-<p align="center">
-  <img src="data/img_color_demo.png" width=800><br/>
-</p>
-
-**Korean character set**
-<p align="center">
-  <img src="data/demo_korean.jpg" width=800><br/>
-</p>
-
-**Result sample (non-color)**
-<p align="center">
-  <img src="results/data1/img_output.jpg" width=800><br/>
-</p>
-
-**Result sample (color)**
-<p align="center">
-  <img src="results/data1/img_color_output.jpg" width=800><br/>
-</p>
 
 ## Tech
 
